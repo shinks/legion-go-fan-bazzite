@@ -83,6 +83,10 @@ Optional thermal guard (full above 80 °C, back to automatic below 65 °C):
 sudo systemctl enable --now fan-guard.service
 ```
 
+Stopping the guard returns the fan to firmware control (`ExecStop=/usr/local/bin/fan auto` in the
+unit) — otherwise a `systemctl stop fan-guard` while it is in `full` leaves the fan pinned at
+maximum with nothing to bring it back.
+
 MokManager note: a 2.4 GHz dongle in the Legion Go's **bottom** USB-C port does not enumerate in
 pre-boot (it works fine in the OS). Use the top port or a wired keyboard.
 
