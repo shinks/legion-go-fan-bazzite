@@ -1,0 +1,27 @@
+#!/bin/bash
+# fan-guard -- keep the APU cool without a curve:
+# full speed above 80 C, back to the firmware curve below 65 C (hysteresis).
+set -u
+HI=${HI:-80000}
+LO=${LO:-65000}
+C=/proc/acpi/call
+state=auto
+
+temp() { for h in /sys/class/hwmon/hwmon*/; do
+           [ "$(cat "$h/name" 2>/dev/null)" = "k10temp" ] && cat "$h/temp1_input"; done; }
+
+[ -w "$C" ] || { echo "acpi_call is not loaded"; exit 1; }
+
+while :; do
+  t=$(temp)
+  if [ -n "$t" ]; then
+    if [ "$state" = auto ] && [ "$t" -ge "$HI" ]; then
+      echo '\_SB.GZFD.WMAE 0x00 0x12 b0000020401000000' > "$C"
+      logger -t fan-guard "full speed (${t} mC)"; state=full
+    elif [ "$state" = full ] && [ "$t" -le "$LO" ]; then
+      echo '\_SB.GZFD.WMAE 0x00 0x12 b0000020400000000' > "$C"
+      logger -t fan-guard "auto (${t} mC)"; state=auto
+    fi
+  fi
+  sleep 5
+done

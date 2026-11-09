@@ -1,0 +1,11 @@
+[Unit]
+Description=Thermal fan guard (Legion Go full-speed override with hysteresis)
+After=acpi-call.service
+Requires=acpi-call.service
+
+[Service]
+ExecStart=/usr/local/bin/fan-guard
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

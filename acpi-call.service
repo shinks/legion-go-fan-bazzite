@@ -1,0 +1,12 @@
+[Unit]
+Description=Load acpi_call (MOK-signed) for Legion Go fan control
+After=systemd-modules-load.service
+ConditionPathExists=/var/lib/acpi-call/acpi_call.ko
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/acpi-call-load.sh
+
+[Install]
+WantedBy=multi-user.target
