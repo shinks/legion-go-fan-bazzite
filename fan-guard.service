@@ -5,6 +5,8 @@ Requires=acpi-call.service
 
 [Service]
 ExecStart=/usr/local/bin/fan-guard
+# Never leave the fan pinned at full speed when the guard is stopped:
+ExecStop=/usr/local/bin/fan auto
 Restart=always
 
 [Install]
